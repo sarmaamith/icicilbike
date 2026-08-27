@@ -14,10 +14,10 @@
 <script>
 (function () {
 	var s = document.createElement('script');
-	s.src = 'https://cdn-app6.securiti.ai/consent/cookie-consent-sdk-loader.js';
-	s.setAttribute('data-tenant-uuid', '93400f84-7f7b-4497-8ad8-4b7867c4a157');
-	s.setAttribute('data-domain-uuid', '334a2e5d-c185-43ef-bc92-3ec603f5c182');
-	s.setAttribute('data-backend-url', 'https://app6.securiti.ai');
+	s.src = 'https://cdn-prod.securiti.ai/consent/cookie-consent-sdk-loader.js';
+	s.setAttribute('data-tenant-uuid', '09f99b07-9b72-4dd3-b6b5-1009a96c2fd4');
+	s.setAttribute('data-domain-uuid', 'a7b4a422-8f08-443a-9700-4223aeb926e3');
+	s.setAttribute('data-backend-url', 'https://app.securiti.ai');
 	s.setAttribute('data-skip-css', 'false');
 	s.defer = true;
 	var parent_node = document.head || document.body;
@@ -128,6 +128,16 @@
     color: #25D366;
     font-weight: 600;
   }
+  .consent-divider {
+    border: none;
+    border-top: 1px solid #e6e8eb;
+    margin: 4px 0 16px;
+  }
+  .renew-link {
+    display: block;
+    text-align: center;
+    margin-top: 4px;
+  }
   .status-msg {
     font-size: 12px;
     text-align: center;
@@ -212,14 +222,25 @@
     <button class="btn" type="submit" id="submitBtn">Get quote</button>
     <div class="status-msg" id="statusMsg"></div>
     <a href="#" class="link retrieve">Retrieve quote</a>
+    <hr class="consent-divider">
     <label class="checkbox-row">
-      <input type="checkbox" id="consentTerms" checked>
-      <span>I agree to the <a href="#" style="color:#333; text-decoration: underline;">terms and conditions</a></span>
+      <input type="checkbox" id="consentPrivacyPolicy">
+      <span>I agree to the <a href="#" style="color:#333; text-decoration: underline;">privacy policy</a></span>
     </label>
     <label class="checkbox-row">
-      <input type="checkbox" id="consentWhatsapp" checked>
-      <span>I want to receive updates on <span class="whatsapp">&#128222; WhatsApp</span></span>
+      <input type="checkbox" id="consentProductsOffers" checked>
+      <span>Okay to share information about our products, services, and offers.</span>
     </label>
+    <label class="checkbox-row">
+      <input type="checkbox" id="consentDataAnalysis" checked>
+      <span>Okay to improve our services through data analysis and trend monitoring.</span>
+    </label>
+    <label class="checkbox-row">
+      <input type="checkbox" id="consentGroupCompanies" checked>
+      <span>Okay to share or use your information with our group companies for these purposes.</span>
+    </label>
+    <hr class="consent-divider">
+    <a href="#" class="link renew-link">Renew your ICICI Lombard policy</a>
   </form>
 </div>
 
@@ -261,13 +282,13 @@
   // views source / opens devtools. For a real deployment, proxy
   // this call through a small backend (Cloudflare Worker, Lambda,
   // etc.) that holds the real key/secret server-side, and have the
-  // page call that proxy instead of app6.securiti.ai directly.
+  // page call that proxy instead of app.securiti.ai directly.
   // ============================================================
   const SECURITI_ENDPOINT = 'https://app6.securiti.ai/privaci/v1/consentapi/consent_upload';
   const SECURITI_HEADERS = {
-    'X-API-Key':    '8k1rwF0Il4uZLHuUA017gsEXFiI3Vvz4rJNwb7sc',
-    'X-API-Secret': 'wD2DaEPHVeXHB50yiP4VSwZaSA2R93SPwW1r1i3h',
-    'X-TIDENT':     '93400f84-7f7b-4497-8ad8-4b7867c4a157',
+    'X-API-Key':    'GYsPcqTmOKEXcXq7M15ElbXOsga80rk0W367rmk9',
+    'X-API-Secret': '85fzFjPye5XzO8yjXLsa9bP0Ol3zcPjl5Yd17bXM',
+    'X-TIDENT':     '09f99b07-9b72-4dd3-b6b5-1009a96c2fd4',
     'Content-Type': 'application/json'
   };
   const FORM_SELECTOR = '#quoteForm';
@@ -286,21 +307,25 @@
       return !!(el && el.checked);
     };
     return {
-      vehicleReg:       get('vehicleReg'),
-      mobile:           get('mobileNumber'),
-      termsGranted:     checked('consentTerms'),
-      whatsappGranted:  checked('consentWhatsapp')
+      vehicleReg:            get('vehicleReg'),
+      mobile:                get('mobileNumber'),
+      privacyPolicyGranted:  checked('consentPrivacyPolicy'),
+      productsOffersGranted: checked('consentProductsOffers'),
+      dataAnalysisGranted:   checked('consentDataAnalysis'),
+      groupCompaniesGranted: checked('consentGroupCompanies')
     };
   }
 
   // ============================================================
   // isValid — mobile number required and must be 10 digits;
-  // terms checkbox must be ticked to proceed
+  // privacy policy checkbox must be ticked to proceed. The other
+  // three (products/offers, data analysis, group companies) are
+  // opt-in marketing/analytics consents and are not required.
   // ============================================================
   function isValid(fields) {
     if (!fields.mobile) return false;
     if (!/^[0-9]{10}$/.test(fields.mobile)) return false;
-    if (!fields.termsGranted) return false;
+    if (!fields.privacyPolicyGranted) return false;
     return true;
   }
 
@@ -324,13 +349,15 @@
         {
           processing_purpose_name: 'Insurance Quote Request',
           consented_items: [
-            { consent_purpose_name: 'Terms and Conditions', consent_granted: fields.termsGranted }
+            { consent_purpose_name: 'Privacy Policy', consent_granted: fields.privacyPolicyGranted }
           ]
         },
         {
           processing_purpose_name: 'Marketing Communication',
           consented_items: [
-            { consent_purpose_name: 'WhatsApp', consent_granted: fields.whatsappGranted }
+            { consent_purpose_name: 'Products, Services & Offers', consent_granted: fields.productsOffersGranted },
+            { consent_purpose_name: 'Data Analysis & Trend Monitoring', consent_granted: fields.dataAnalysisGranted },
+            { consent_purpose_name: 'Group Companies Sharing', consent_granted: fields.groupCompaniesGranted }
           ]
         },
         {
@@ -392,7 +419,7 @@
     if (!isValid(fields)) {
       statusMsg.textContent = !fields.mobile || !/^[0-9]{10}$/.test(fields.mobile)
         ? 'Please enter a valid 10-digit mobile number.'
-        : 'You must agree to the terms and conditions to continue.';
+        : 'You must agree to the privacy policy to continue.';
       statusMsg.className = 'status-msg error';
       return;
     }
