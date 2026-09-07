@@ -26,7 +26,7 @@
 	parent_node.appendChild(s);
 })()
 </script>
-	
+
 <meta charset="UTF-8">
 <title>Get a Quote</title>
 <style>
@@ -151,68 +151,9 @@
   .status-msg.error { color: #c0392b; }
   .status-msg.success { color: #1e8449; }
 
-  /* ---------- DPDPA re-consent popup (shown on "Get quote") ---------- */
-  .dpdpa-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: 1500;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-  }
-  .dpdpa-overlay.active { display: flex; }
-  .dpdpa-box {
-    background: #fff;
-    max-width: 480px;
-    width: 100%;
-    border-radius: 8px;
-    padding: 28px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-  }
-  .dpdpa-box p {
-    margin: 0 0 20px;
-    font-size: 15px;
-    line-height: 1.5;
-    color: #222;
-  }
-  .dpdpa-consent-line {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 13px;
-    color: #333;
-    margin-bottom: 22px;
-  }
-  .dpdpa-consent-line input {
-    width: 18px;
-    height: 18px;
-    margin-top: 2px;
-    flex-shrink: 0;
-    accent-color: #e8621d;
-  }
-  .dpdpa-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-  }
-  .dpdpa-no-btn, .dpdpa-yes-btn {
-    border: none;
-    border-radius: 6px;
-    padding: 10px 24px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    color: #fff;
-  }
-  .dpdpa-no-btn { background: #e04f5f; }
-  .dpdpa-no-btn:hover { background: #c9404f; }
-  .dpdpa-yes-btn { background: #2fa84f; }
-  .dpdpa-yes-btn:hover { background: #268f42; }
-
-  /* ---------- Channel opt-in sub-checkboxes (Call / SMS) ---------- */
+  /* ---------- Channel opt-in sub-checkboxes (Voice / Text) ---------- */
   .channel-group {
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
@@ -235,7 +176,28 @@
     height: 16px;
   }
 
-  /* ---------- Privacy Notice popup ---------- */
+  /* ---------- "Stay connected with us" grouped consent box ---------- */
+  .stay-connected-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 10px;
+  }
+  .consent-box {
+    border: 1px dashed #e8621d;
+    border-radius: 8px;
+    padding: 14px 14px 2px;
+    margin-bottom: 14px;
+  }
+
+  /* ---------- Privacy Notice trigger text (no hyperlink) ---------- */
+  .privacy-notice-trigger {
+    color: #333;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* ---------- Privacy Notice popup (mandatory read-through) ---------- */
   .privacy-notice-overlay {
     display: none;
     position: fixed;
@@ -271,15 +233,6 @@
     font-size: 18px;
     color: #222;
   }
-  .privacy-notice-close {
-    border: none;
-    background: transparent;
-    font-size: 26px;
-    line-height: 1;
-    cursor: pointer;
-    color: #666;
-  }
-  .privacy-notice-close:hover { color: #222; }
   .privacy-notice-body {
     padding: 20px 24px;
     overflow-y: auto;
@@ -315,6 +268,25 @@
     vertical-align: top;
   }
   .privacy-notice-body table th { background: #f7f8fa; }
+  .privacy-notice-footer {
+    padding: 14px 24px;
+    border-top: 1px solid #e6e8eb;
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+  .privacy-notice-ok-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    background: #2fa84f;
+  }
+  .privacy-notice-ok-btn:hover { background: #268f42; }
+  .privacy-notice-ok-btn:disabled { background: #a9d9b6; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -333,45 +305,52 @@
     <hr class="consent-divider">
     <label class="checkbox-row">
       <input type="checkbox" id="consentPrivacyNotice" required>
-      <span>I agree to the <a href="#" id="privacyNoticeLink" style="color:#333; text-decoration: underline;">Privacy Notice</a>.</span>
+      <span>I agree to the <span class="privacy-notice-trigger" id="privacyNoticeLink">Privacy Notice</span></span>
     </label>
-    <div class="checkbox-row channel-group">
-      <span>I consent to receiving information about ICICI Lombard&rsquo;s products &amp; services through the following channels.</span>
-      <div class="channel-options">
-        <label class="channel-option">
-          <input type="checkbox" id="consentCall">
-          <span>Call</span>
+    <p class="stay-connected-label">Stay connected with us:</p>
+    <div class="consent-box">
+      <div class="channel-group" style="margin-bottom: 12px;">
+        <label class="checkbox-row" style="margin-bottom: 0;">
+          <input type="checkbox" id="consentMarketingChannels">
+          <span>I consent to receive information about your products, services, offers, and promotional campaigns, including products and services that may be relevant to our needs and preference</span>
         </label>
-        <label class="channel-option">
-          <input type="checkbox" id="consentSMS">
-          <span>SMS</span>
-        </label>
+        <div class="channel-options" style="margin-left:28px;">
+          <label class="channel-option">
+            <input type="checkbox" id="consentVoice">
+            <span>Voice</span>
+          </label>
+          <label class="channel-option">
+            <input type="checkbox" id="consentText">
+            <span>Text</span>
+          </label>
+        </div>
       </div>
+      <label class="checkbox-row">
+        <input type="checkbox" id="consentDataAnalysis">
+        <span>I consent to the use of my information for evaluating, developing, and improving services, including activities such as data analysis and monitoring usage trends.</span>
+      </label>
+      <label class="checkbox-row">
+        <input type="checkbox" id="consentGroupCompanies">
+        <span>I consent to ICICI Lombard sharing, disclosing, exchanging, or using my information with its associates, subsidiaries, affiliates, joint ventures, and partners involved in providing services or products.</span>
+      </label>
     </div>
-    <label class="checkbox-row">
-      <input type="checkbox" id="consentDataAnalysis">
-      <span>I consent to the use of my information for evaluating, developing, and improving services, including activities such as data analysis and monitoring usage trends.</span>
-    </label>
-    <label class="checkbox-row">
-      <input type="checkbox" id="consentGroupCompanies">
-      <span>I consent to receiving information about ICICI Group companies and third party products and services.</span>
-    </label>
-    <hr class="consent-divider">
     <a href="#" class="link renew-link">Renew your ICICI Lombard policy</a>
   </form>
 </div>
 
 <!-- ============================================================
      Privacy Notice popup — opened by clicking the "Privacy Notice"
-     link inside the consent checkbox above.
+     text inside the consent checkbox above. Mandatory read-through:
+     the OK button stays disabled until the visitor scrolls the
+     notice body to the bottom, and there is no other way to close
+     this popup (no X button, no click-outside-to-close).
      ============================================================ -->
 <div class="privacy-notice-overlay" id="privacyNoticeOverlay">
   <div class="privacy-notice-box">
     <div class="privacy-notice-header">
       <h3>PRIVACY NOTICE</h3>
-      <button type="button" class="privacy-notice-close" id="privacyNoticeCloseBtn" aria-label="Close">&times;</button>
     </div>
-    <div class="privacy-notice-body">
+    <div class="privacy-notice-body" id="privacyNoticeBody">
       <p><strong>Last update: 07/09/2026</strong></p>
       <p>Welcome to the Privacy Notice of ICICI Lombard General Insurance Company Limited (&ldquo;Privacy Notice&rdquo;). In this document, ICICI Lombard General Insurance Company Limited acts as the Data Fiduciary and remains committed to safeguarding your privacy. This Privacy Notice outlines how we collect, use, disclose, and protect your Digital Personal Data. All Processing of Digital Personal Data is undertaken in accordance with the Digital Personal Data Protection Act, 2023 and rules made there under (&ldquo;DPDPA&rdquo;), and other applicable data protection laws and regulatory requirements relevant to ICICI Lombard General Insurance Company Limited (&ldquo;ICICI Lombard&rdquo;).</p>
       <p>Throughout this Privacy Notice, the terms &ldquo;we,&rdquo; &ldquo;us,&rdquo; and &ldquo;our&rdquo; refer to ICICI Lombard. For additional information about our company, please visit www.icicilombard.com.</p>
@@ -583,32 +562,8 @@
         Website: www.icicilombard.com
       </p>
     </div>
-  </div>
-</div>
-
-<!-- ============================================================
-     DPDPA re-consent popup — shown when "Get quote" is clicked
-     (after the form fields themselves pass validation).
-     ============================================================ -->
-<div class="dpdpa-overlay" id="dpdpaOverlay">
-  <div class="dpdpa-box">
-    <p>
-      In light of recent changes to the DPDPA (Digital Personal Data
-      Protection Act) policies, a new consent is being collected from
-      you for the processing of your personal data. Do you agree to proceed?
-    </p>
-    <label class="dpdpa-consent-line">
-      <input type="checkbox" id="dpdpaTermsCheckbox" checked>
-      <span>
-        I consent to the collection, use, and processing of my personal
-        data by ICICI Lombard General Insurance Company Limited in
-        accordance with the Digital Personal Data Protection Act (DPDPA),
-        2023, for the purpose of processing my insurance quote request.
-      </span>
-    </label>
-    <div class="dpdpa-actions">
-      <button type="button" class="dpdpa-no-btn" id="dpdpaNoBtn">No</button>
-      <button type="button" class="dpdpa-yes-btn" id="dpdpaYesBtn">Yes</button>
+    <div class="privacy-notice-footer">
+      <button type="button" class="privacy-notice-ok-btn" id="privacyNoticeOkBtn" disabled>OK</button>
     </div>
   </div>
 </div>
@@ -637,7 +592,15 @@
   const inFlight = new WeakSet();
 
   // ============================================================
-  // readForm — pull field/checkbox values by id
+  // readForm — pull field/checkbox values by id.
+  //
+  // Checkbox mapping (matches the "Stay connected with us" screen):
+  //   #consentPrivacyNotice     -> "I agree to the Privacy Notice"        (required)
+  //   #consentMarketingChannels -> "...products, services, offers, and promotional campaigns..." (required)
+  //   #consentVoice             -> "Voice" (required)
+  //   #consentText              -> "Text" (required)
+  //   #consentDataAnalysis      -> "...evaluating, developing, and improving services..." (required)
+  //   #consentGroupCompanies    -> "...associates, subsidiaries, affiliates, joint ventures, and partners..." (required)
   // ============================================================
   function readForm(form) {
     const get = function (id) {
@@ -649,27 +612,29 @@
       return !!(el && el.checked);
     };
     return {
-      vehicleReg:            get('vehicleReg'),
-      mobile:                get('mobileNumber'),
-      privacyNoticeGranted:  checked('consentPrivacyNotice'),
-      callGranted:           checked('consentCall'),
-      smsGranted:            checked('consentSMS'),
-      dataAnalysisGranted:   checked('consentDataAnalysis'),
-      groupCompaniesGranted: checked('consentGroupCompanies')
+      vehicleReg:               get('vehicleReg'),
+      mobile:                   get('mobileNumber'),
+      privacyNoticeGranted:     checked('consentPrivacyNotice'),
+      marketingChannelsGranted: checked('consentMarketingChannels'),
+      voiceGranted:             checked('consentVoice'),
+      textGranted:              checked('consentText'),
+      dataAnalysisGranted:      checked('consentDataAnalysis'),
+      groupCompaniesGranted:    checked('consentGroupCompanies')
     };
   }
 
   // ============================================================
   // isValid — mobile number required and must be 10 digits; every
-  // consent checkbox (Privacy Notice, Call, SMS, Data Analysis,
-  // Group Companies) is now mandatory to proceed.
+  // consent checkbox (Privacy Notice, Marketing Channels, Voice,
+  // Text, Data Analysis, Group Companies) is mandatory to proceed.
   // ============================================================
   function isValid(fields) {
     if (!fields.mobile) return false;
     if (!/^[0-9]{10}$/.test(fields.mobile)) return false;
     if (!fields.privacyNoticeGranted) return false;
-    if (!fields.callGranted) return false;
-    if (!fields.smsGranted) return false;
+    if (!fields.marketingChannelsGranted) return false;
+    if (!fields.voiceGranted) return false;
+    if (!fields.textGranted) return false;
     if (!fields.dataAnalysisGranted) return false;
     if (!fields.groupCompaniesGranted) return false;
     return true;
@@ -678,10 +643,9 @@
   // ============================================================
   // buildPayload — Securiti consent_upload schema. Every checkbox
   // is reported as the visitor actually set it (not hardcoded true).
-  // dpdpaGranted comes from the popup's checkbox, captured right
-  // before this payload is sent.
+  // No DPDPA re-consent purpose — that popup has been removed.
   // ============================================================
-  function buildPayload(fields, dpdpaGranted) {
+  function buildPayload(fields) {
     return {
       UUID: fields.mobile,
       uuids: {
@@ -700,16 +664,11 @@
         {
           processing_purpose_name: 'Marketing Communication',
           consented_items: [
-            { consent_purpose_name: 'Call', consent_granted: fields.callGranted },
-            { consent_purpose_name: 'SMS', consent_granted: fields.smsGranted },
+            { consent_purpose_name: 'Products, Services, Offers & Promotional Campaigns', consent_granted: fields.marketingChannelsGranted },
+            { consent_purpose_name: 'Voice', consent_granted: fields.voiceGranted },
+            { consent_purpose_name: 'Text', consent_granted: fields.textGranted },
             { consent_purpose_name: 'Data Analysis & Trend Monitoring', consent_granted: fields.dataAnalysisGranted },
-            { consent_purpose_name: 'ICICI Companies & 3rd party Product/Service', consent_granted: fields.groupCompaniesGranted }
-          ]
-        },
-        {
-          processing_purpose_name: 'DPDPA Re-Consent',
-          consented_items: [
-            { consent_purpose_name: 'Terms and Conditions', consent_granted: dpdpaGranted }
+            { consent_purpose_name: 'Associates, Subsidiaries, Affiliates, Joint Ventures & Partners', consent_granted: fields.groupCompaniesGranted }
           ]
         }
       ]
@@ -733,45 +692,77 @@
   }
 
   // ============================================================
-  // DPDPA popup elements + open/close helpers
-  // ============================================================
-  const dpdpaOverlay  = document.getElementById('dpdpaOverlay');
-  const dpdpaYesBtn   = document.getElementById('dpdpaYesBtn');
-  const dpdpaNoBtn    = document.getElementById('dpdpaNoBtn');
-  const dpdpaTermsBox = document.getElementById('dpdpaTermsCheckbox');
-
-  function openDpdpaModal() { dpdpaOverlay.classList.add('active'); }
-  function closeDpdpaModal() { dpdpaOverlay.classList.remove('active'); }
-
-  // ============================================================
   // Privacy Notice popup — opened by clicking the "Privacy Notice"
-  // link inside the first consent checkbox. Purely informational;
-  // it does not itself grant or record consent (the checkbox next
-  // to it does that).
+  // text inside the first consent checkbox. Mandatory read-through:
+  // the OK button stays disabled until the notice body is scrolled
+  // to the bottom, and there is no other way to dismiss the popup.
   // ============================================================
-  const privacyNoticeOverlay  = document.getElementById('privacyNoticeOverlay');
-  const privacyNoticeLink     = document.getElementById('privacyNoticeLink');
-  const privacyNoticeCloseBtn = document.getElementById('privacyNoticeCloseBtn');
+  const privacyNoticeOverlay   = document.getElementById('privacyNoticeOverlay');
+  const privacyNoticeLink      = document.getElementById('privacyNoticeLink');
+  const privacyNoticeBody      = document.getElementById('privacyNoticeBody');
+  const privacyNoticeOkBtn     = document.getElementById('privacyNoticeOkBtn');
+  const privacyNoticeCheckbox  = document.getElementById('consentPrivacyNotice');
+
+  // True when the popup was opened by the visitor trying to CHECK
+  // the "I agree to the Privacy Notice" checkbox — in that case,
+  // clicking OK is what actually checks the box (see below).
+  // False when opened via the "Privacy Notice" text link, which is
+  // purely informational and never changes the checkbox itself.
+  let pendingCheckboxConsent = false;
 
   function openPrivacyNotice(event) {
     if (event) event.preventDefault();
     if (privacyNoticeOverlay) privacyNoticeOverlay.classList.add('active');
+    if (privacyNoticeOkBtn) privacyNoticeOkBtn.disabled = true;
+    if (privacyNoticeBody) privacyNoticeBody.scrollTop = 0;
   }
   function closePrivacyNotice() {
     if (privacyNoticeOverlay) privacyNoticeOverlay.classList.remove('active');
   }
 
-  if (privacyNoticeLink) privacyNoticeLink.addEventListener('click', openPrivacyNotice);
-  if (privacyNoticeCloseBtn) privacyNoticeCloseBtn.addEventListener('click', closePrivacyNotice);
-  if (privacyNoticeOverlay) {
-    privacyNoticeOverlay.addEventListener('click', function (event) {
-      if (event.target === privacyNoticeOverlay) closePrivacyNotice();
+  if (privacyNoticeLink) {
+    privacyNoticeLink.addEventListener('click', function (event) {
+      pendingCheckboxConsent = false;
+      openPrivacyNotice(event);
+    });
+  }
+
+  // Clicking the checkbox itself to CHECK it opens the same popup
+  // and holds off on actually checking the box until "OK" is
+  // clicked (i.e. the visitor has scrolled through the notice).
+  // Unchecking the box (it was already checked) works normally,
+  // with no popup.
+  if (privacyNoticeCheckbox) {
+    privacyNoticeCheckbox.addEventListener('click', function (event) {
+      if (privacyNoticeCheckbox.checked) {
+        event.preventDefault(); // reverts the native toggle back to unchecked
+        pendingCheckboxConsent = true;
+        openPrivacyNotice();
+      }
+    });
+  }
+
+  if (privacyNoticeBody) {
+    privacyNoticeBody.addEventListener('scroll', function () {
+      const reachedBottom = privacyNoticeBody.scrollTop + privacyNoticeBody.clientHeight >= privacyNoticeBody.scrollHeight - 4;
+      if (reachedBottom && privacyNoticeOkBtn) privacyNoticeOkBtn.disabled = false;
+    });
+  }
+
+  if (privacyNoticeOkBtn) {
+    privacyNoticeOkBtn.addEventListener('click', function () {
+      if (privacyNoticeOkBtn.disabled) return;
+      closePrivacyNotice();
+      if (pendingCheckboxConsent && privacyNoticeCheckbox) {
+        privacyNoticeCheckbox.checked = true;
+        privacyNoticeCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+        pendingCheckboxConsent = false;
+      }
     });
   }
 
   // ============================================================
-  // Get Quote gating — every consent checkbox (Privacy Notice,
-  // Call, SMS, Data Analysis, Group Companies) must be ticked
+  // Get Quote gating — every consent checkbox must be ticked
   // before the "Get quote" button is enabled. Re-checked live on
   // every checkbox change, not just on submit.
   // ============================================================
@@ -779,8 +770,9 @@
   const getQuoteBtn = quoteForm ? quoteForm.querySelector('#submitBtn') : null;
   const mandatoryConsentIds = [
     'consentPrivacyNotice',
-    'consentCall',
-    'consentSMS',
+    'consentMarketingChannels',
+    'consentVoice',
+    'consentText',
     'consentDataAnalysis',
     'consentGroupCompanies'
   ];
@@ -800,14 +792,10 @@
   });
   refreshGetQuoteState(); // set initial disabled state on page load
 
-  // Holds the form/fields/statusMsg/submitBtn for whichever submit
-  // triggered the popup, so the Yes/No handlers know what to act on.
-  let pendingSubmission = null;
-
   // ============================================================
-  // Submit handler — validate fields first, then show the DPDPA
-  // popup instead of uploading consent right away. The actual
-  // upload now happens from the popup's "Yes" button.
+  // Submit handler — validate fields, then upload consent to
+  // Securiti directly. The DPDPA re-consent popup has been removed
+  // entirely, so there is no intermediate Yes/No step anymore.
   // ============================================================
   document.addEventListener('submit', function (event) {
     const form = event.target;
@@ -828,46 +816,11 @@
     }
 
     statusMsg.textContent = '';
-    dpdpaTermsBox.checked = true; // reset popup checkbox to its default each time it's shown
-    pendingSubmission = { form, fields, statusMsg, submitBtn };
-    openDpdpaModal();
-  }, true);
-
-  // ============================================================
-  // "No" — close the popup, don't upload consent, don't proceed.
-  // ============================================================
-  dpdpaNoBtn.addEventListener('click', function () {
-    closeDpdpaModal();
-    if (pendingSubmission && pendingSubmission.statusMsg) {
-      pendingSubmission.statusMsg.textContent = 'You must accept the DPDPA consent to get a quote.';
-      pendingSubmission.statusMsg.className = 'status-msg error';
-    }
-    pendingSubmission = null;
-  });
-
-  // ============================================================
-  // "Yes" — capture consent (including the DPDPA popup checkbox)
-  // and upload it to Securiti.
-  // ============================================================
-  dpdpaYesBtn.addEventListener('click', function () {
-    if (!pendingSubmission) { closeDpdpaModal(); return; }
-
-    const { form, fields, statusMsg, submitBtn } = pendingSubmission;
-    const dpdpaGranted = dpdpaTermsBox.checked;
-    closeDpdpaModal();
-
-    if (!dpdpaGranted) {
-      statusMsg.textContent = 'You must accept the DPDPA consent to get a quote.';
-      statusMsg.className = 'status-msg error';
-      pendingSubmission = null;
-      return;
-    }
-
     inFlight.add(form);
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting...';
 
-    const payload = buildPayload(fields, dpdpaGranted);
+    const payload = buildPayload(fields);
 
     uploadConsent(payload)
       .then(function (result) {
@@ -885,9 +838,8 @@
         inFlight.delete(form);
         submitBtn.disabled = false;
         submitBtn.textContent = 'Get quote';
-        pendingSubmission = null;
       });
-  });
+  }, true);
 })();
 </script>
 </body>
