@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- ============================================================
+     Securiti Consent Banner SDK loader
+     Same pattern used on sarmaamith.github.io/contactus/.
+     Reuses that tenant's tenant-uuid / domain-uuid — confirm in
+     your Securiti console that this GitHub Pages origin
+     (sarmaamith.github.io) is registered under that domain-uuid,
+     otherwise swap in the correct one for this property.
+     After load, call setConsentBannerParams({ uuid: <unique id> })
+     to tag the visitor once you know their mobile number.
+     ============================================================ -->
+
+<!-- After adding this script, call setConsentBannerParams({uuid: <unique id> }) to set unique ID for a customer.  -->
+<script>
+(function () {
+	var s = document.createElement('script');
+	s.src = 'https://cdn-app6.securiti.ai/consent/cookie-consent-sdk-loader.js';
+	s.setAttribute('data-tenant-uuid', '93400f84-7f7b-4497-8ad8-4b7867c4a157');
+	s.setAttribute('data-domain-uuid', '334a2e5d-c185-43ef-bc92-3ec603f5c182');
+	s.setAttribute('data-backend-url', 'https://app6.securiti.ai');
+	s.setAttribute('data-skip-css', 'false');
+	s.defer = true;
+	var parent_node = document.head || document.body;
+	parent_node.appendChild(s);
+})()
+</script>
+
+<meta charset="UTF-8">
+<title>Get a Quote</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f2f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    padding: 32px;
+    width: 100%;
+    max-width: 420px;
+  }
+  .field {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d9dde2;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 8px;
+    outline: none;
+  }
+  .field::placeholder {
+    color: #9aa1a8;
+  }
+  .field:focus {
+    border-color: #e8621d;
+  }
+  .link-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  a.link {
+    color: #e8621d;
+    text-decoration: underline;
+    font-weight: 600;
+  }
+  .label {
+    font-size: 12px;
+    color: #e8621d;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .mobile-field {
+    border-color: #e8621d;
+    border-width: 2px;
+    margin-bottom: 24px;
+  }
+  .btn {
+    width: 100%;
+    background: #e8621d;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  .btn:hover {
+    background: #d5560f;
+  }
+  .btn:disabled {
+    background: #eabb9c;
+    cursor: not-allowed;
+  }
+  .retrieve {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 12px;
+  }
+  .checkbox-row input {
+    accent-color: #e8621d;
+    width: 18px;
+    height: 18px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+  .whatsapp {
+    color: #25D366;
+    font-weight: 600;
+  }
+  .consent-divider {
+    border: none;
+    border-top: 1px solid #e6e8eb;
+    margin: 4px 0 16px;
+  }
+  .renew-link {
+    display: block;
+    text-align: center;
+    margin-top: 4px;
+  }
+  .status-msg {
+    font-size: 12px;
+    text-align: center;
+    margin-top: -8px;
+    margin-bottom: 16px;
+    min-height: 14px;
+  }
+  .status-msg.error { color: #c0392b; }
+  .status-msg.success { color: #1e8449; }
+
+  /* ---------- Channel opt-in sub-checkboxes (Voice / Text) ---------- */
+  .channel-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .channel-options {
+    display: flex;
+    gap: 24px;
+    margin-left: 2px;
+  }
+  .channel-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #333;
+  }
+  .channel-option input {
+    accent-color: #e8621d;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ---------- "Stay connected with us" grouped consent box ---------- */
+  .stay-connected-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 10px;
+  }
+  .consent-box {
+    border: 1px dashed #e8621d;
+    border-radius: 8px;
+    padding: 14px 14px 2px;
+    margin-bottom: 14px;
+  }
+
+  /* ---------- Privacy Notice trigger text (no hyperlink) ---------- */
+  .privacy-notice-trigger {
+    color: #333;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* ---------- Privacy Notice popup (mandatory read-through) ---------- */
+  .privacy-notice-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .privacy-notice-overlay.active { display: flex; }
+  .privacy-notice-box {
+    background: #fff;
+    max-width: 720px;
+    width: 100%;
+    max-height: 85vh;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .privacy-notice-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid #e6e8eb;
+    flex-shrink: 0;
+  }
+  .privacy-notice-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #222;
+  }
+  .privacy-notice-body {
+    padding: 20px 24px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #333;
+  }
+  .privacy-notice-body h4 {
+    font-size: 14px;
+    color: #97144d;
+    margin: 20px 0 8px;
+  }
+  .privacy-notice-body h4:first-child { margin-top: 0; }
+  .privacy-notice-body h5 {
+    font-size: 13px;
+    color: #222;
+    margin: 14px 0 6px;
+  }
+  .privacy-notice-body p { margin: 0 0 10px; }
+  .privacy-notice-body ul { margin: 0 0 10px; padding-left: 20px; }
+  .privacy-notice-body li { margin-bottom: 6px; }
+  .privacy-notice-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 14px;
+    font-size: 12.5px;
+  }
+  .privacy-notice-body table th,
+  .privacy-notice-body table td {
+    border: 1px solid #e6e8eb;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .privacy-notice-body table th { background: #f7f8fa; }
+  .privacy-notice-footer {
+    padding: 14px 24px;
+    border-top: 1px solid #e6e8eb;
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+  .privacy-notice-ok-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    background: #2fa84f;
+  }
+  .privacy-notice-ok-btn:hover { background: #268f42; }
+  .privacy-notice-ok-btn:disabled { background: #a9d9b6; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="card">
+  <form id="quoteForm">
+    <input class="field" id="vehicleReg" type="text" placeholder="Vehicle registration number">
+    <div class="link-row">
+      <a href="#" class="link">Got a new vehicle</a>
+      <a href="#" class="link">What is this?</a>
+    </div>
+    <span class="label">Mobile number</span>
+    <input class="field mobile-field" id="mobileNumber" type="tel" pattern="[0-9]{10}" maxlength="10" required>
+    <button class="btn" type="submit" id="submitBtn">Get quote</button>
+    <div class="status-msg" id="statusMsg"></div>
+    <a href="#" class="link retrieve">Retrieve quote</a>
+    <hr class="consent-divider">
+    <label class="checkbox-row">
+      <input type="checkbox" id="consentPrivacyNotice" required>
+      <span>I agree to the <span class="privacy-notice-trigger" id="privacyNoticeLink">Privacy Notice</span></span>
+    </label>
+    <p class="stay-connected-label">Stay connected with us:</p>
+    <div class="consent-box">
+      <div class="channel-group" style="margin-bottom: 12px;">
+        <label class="checkbox-row" style="margin-bottom: 0;">
+          <input type="checkbox" id="consentMarketingChannels">
+          <span>I consent to receive information about your products, services, offers, and promotional campaigns, including products and services that may be relevant to our needs and preference</span>
+        </label>
+        <div class="channel-options" style="margin-left:28px;">
+          <label class="channel-option">
+            <input type="checkbox" id="consentVoice">
+            <span>Voice</span>
+          </label>
+          <label class="channel-option">
+            <input type="checkbox" id="consentText">
+            <span>Text</span>
+          </label>
+        </div>
+      </div>
+      <label class="checkbox-row">
+        <input type="checkbox" id="consentDataAnalysis">
+        <span>I consent to the use of my information for evaluating, developing, and improving services, including activities such as data analysis and monitoring usage trends.</span>
+      </label>
+      <label class="checkbox-row">
+        <input type="checkbox" id="consentGroupCompanies">
+        <span>I consent to ICICI Lombard sharing, disclosing, exchanging, or using my information with its associates, subsidiaries, affiliates, joint ventures, and partners involved in providing services or products.</span>
+      </label>
+    </div>
+    <a href="#" class="link renew-link">Renew your ICICI Lombard policy</a>
+  </form>
+</div>
+
+<!-- ============================================================
+     Privacy Notice popup — opened by clicking the "Privacy Notice"
+     text inside the consent checkbox above. Mandatory read-through:
+     the OK button stays disabled until the visitor scrolls the
+     notice body to the bottom, and there is no other way to close
+     this popup (no X button, no click-outside-to-close).
+     ============================================================ -->
+<div class="privacy-notice-overlay" id="privacyNoticeOverlay">
+  <div class="privacy-notice-box">
+    <div class="privacy-notice-header">
+      <h3>PRIVACY NOTICE</h3>
+    </div>
+    <div class="privacy-notice-body" id="privacyNoticeBody">
+      <p><strong>Last update: 07/09/2026</strong></p>
+      <p>Welcome to the Privacy Notice of ICICI Lombard General Insurance Company Limited (&ldquo;Privacy Notice&rdquo;). In this document, ICICI Lombard General Insurance Company Limited acts as the Data Fiduciary and remains committed to safeguarding your privacy. This Privacy Notice outlines how we collect, use, disclose, and protect your Digital Personal Data. All Processing of Digital Personal Data is undertaken in accordance with the Digital Personal Data Protection Act, 2023 and rules made there under (&ldquo;DPDPA&rdquo;), and other applicable data protection laws and regulatory requirements relevant to ICICI Lombard General Insurance Company Limited (&ldquo;ICICI Lombard&rdquo;).</p>
+      <p>Throughout this Privacy Notice, the terms &ldquo;we,&rdquo; &ldquo;us,&rdquo; and &ldquo;our&rdquo; refer to ICICI Lombard. For additional information about our company, please visit www.icicilombard.com.</p>
+      <p>&ldquo;Personal Data,&rdquo; also known as &ldquo;Personal Information&rdquo; or &ldquo;personally identifiable information&rdquo;, refers to any information or data relating to an individual that allows the respective individual to be identified. This encompasses a wide range of details, including your name, date of birth, and email address.</p>
+
+      <h4>Quick Reference</h4>
+      <ul>
+        <li>What This Privacy Notice Covers</li>
+        <li>Definitions</li>
+        <li>Your Consent</li>
+        <li>How We Collect Your Digital Personal Data</li>
+        <li>What Digital Personal Data We Collect About You</li>
+        <li>How We Use Your Digital Personal Data</li>
+        <li>Who We Share Your Digital Personal Data With</li>
+        <li>Your Rights</li>
+        <li>How We Retain Your Digital Personal Data</li>
+        <li>How We Keep Your Digital Personal Data Secure</li>
+        <li>Children and Persons with Disabilities</li>
+        <li>International Transfers of Digital Personal Data</li>
+        <li>Your Responsibilities as a Data Principal</li>
+        <li>Updates to This Privacy Notice</li>
+        <li>How to Contact Our Grievance Redressal Officer (GRO)</li>
+        <li>Details of the Data Fiduciary</li>
+      </ul>
+
+      <h4>What This Privacy Notice Covers</h4>
+      <p>This Privacy Notice applies to all Digital Personal Data that we collect, use, share, or otherwise process through our online and offline activities that display, link to, or reference this Privacy Notice.</p>
+      <p>This includes information collected through our websites, mobile applications, official social media pages, email communications, online and offline campaigns, branches, offices, customer service channels, and conversations or correspondence with our representatives.</p>
+      <p>In this Privacy Notice, our online activities are referred to as &ldquo;Sites,&rdquo; and our offline activities are referred to as &ldquo;Services.&rdquo; Our Sites may contain links to third-party websites, applications, or platforms that are not operated or controlled by us. Such third-party platforms are not covered by this Privacy Notice, and we encourage you to review their respective privacy notices.</p>
+
+      <h4>Definitions</h4>
+      <p><strong>&ldquo;Consent&rdquo;</strong> means the consent given by a Data Principal that is free, specific, informed, unconditional and unambiguous with a clear affirmative action, and signifies agreement to the Processing of her Digital Personal Data for the Specified Purpose.</p>
+      <p><strong>&ldquo;Data Fiduciary&rdquo;</strong> means any person who alone or in conjunction with other persons determines the purpose and means of Processing Digital Personal Data. For this Privacy Notice, ICICI Lombard is the Data Fiduciary.</p>
+      <p><strong>&ldquo;Data Principal&rdquo;</strong> means the individual to whom the Digital Personal Data relates and, where such individual is a child, includes the parents or lawful guardian of such child, and where such individual is a person with disability, includes her lawful guardian acting on her behalf.</p>
+      <p><strong>&ldquo;Data Processor&rdquo;</strong> means any person who processes Digital Personal Data on behalf of a Data Fiduciary.</p>
+      <p><strong>&ldquo;Digital Personal Data&rdquo;</strong> means Personal Data in digital form.</p>
+      <p><strong>&ldquo;Digital Platforms&rdquo;</strong> means our websites, mobile applications, portals, online services and other digital channels through which we provide information, products, services or customer support.</p>
+      <p><strong>&ldquo;Personal Data&rdquo;</strong> means any data about an individual who is identifiable by or in relation to such data. References to &ldquo;Personal Information&rdquo; in this Privacy Notice shall be construed accordingly.</p>
+      <p><strong>&ldquo;Processing&rdquo;</strong>, in relation to Digital Personal Data, means a wholly or partly automated operation or set of operations performed on Digital Personal Data, and includes operations such as collection, recording, organisation, structuring, storage, adaptation, retrieval, use, alignment or combination, indexing, sharing, disclosure by transmission, dissemination or otherwise making available, restriction, erasure or destruction.</p>
+      <p><strong>&ldquo;Services&rdquo;</strong> means the insurance products, assistance, policy servicing, claims and other services offered or facilitated by ICICI Lombard.</p>
+      <p><strong>&ldquo;Data Protection Law(s)&rdquo;</strong> refers to the entirety of all laws and regulations applicable to the Processing of Personal Data, i.e. the India Digital Personal Data Protection Act 2023 (DPDPA), and the rules and amendments made thereunder from time to time.</p>
+      <p>All capitalized terms used in this Privacy Notice and not otherwise defined herein, unless the context otherwise requires, have the meanings given to such terms under Data Protection Laws.</p>
+
+      <h4>Your Consent</h4>
+      <p>We collect, use, disclose, or otherwise process your Digital Personal Data only when such Processing is fair, lawful, and necessary. You may withdraw your consent at any time by contacting our the designated privacy team using the contact details provided in this Privacy Notice. If you choose not to provide certain Digital Personal Data, we may be unable to deliver the products or services you have requested.</p>
+
+      <h4>How We Collect Your Digital Personal Data</h4>
+      <p>We collect Digital Personal Data through the following sources and channels:</p>
+      <ul>
+        <li><strong>Directly from you:</strong> when you request a quotation, complete a proposal form, purchase or renew a policy, create or use an online account, make a payment, submit a claim, request a service, participate in a survey, raise an enquiry or grievance, communicate with us, or otherwise provide information through physical or digital channels.</li>
+        <li><strong>Through our Digital Platforms and technologies:</strong> when you use our websites, mobile applications or other online services, including through cookies, pixels, web beacons, software development kits, device permissions, logs, analytics tools and similar technologies.</li>
+        <li><strong>From insurance intermediaries and distribution channels:</strong> including agents, brokers, corporate agents, banks, web aggregators, group policyholder, MISP, POSP and other authorized channels such as Bima Sugam, through which you seek or receive insurance products or services.</li>
+        <li><strong>From service providers involved in insurance delivery:</strong> including hospitals, doctors, diagnostic centres, third-party administrators, wellness providers, garages, repairers, surveyors, loss assessors, investigators, roadside-assistance providers, call centres, payment service providers and other vendors assisting with underwriting, servicing or claims.</li>
+        <li><strong>From third parties and authorized databases:</strong> including reinsurers, co-insurers, insurance repositories, the Insurance Information Bureau, credit bureaus, KYC or CKYC agencies, VAHAAN, SARATHI, fraud-monitoring networks, government or regulatory portals, law-enforcement authorities, courts, tribunals, publicly available sources and other sources permitted by law.</li>
+      </ul>
+      <p>Information may be collected in physical or digital form and may subsequently be digitized, verified, combined or updated using information received from the sources described above. We collect only such Digital Personal Data as is reasonably necessary for the purposes described in this Privacy Notice, the relevant consent form, or applicable product and service documentation.</p>
+
+      <h4>What Digital Personal Data We Collect About You</h4>
+      <h5>Identity, Personal and Contact Information</h5>
+      <p>We may collect your name, residential and correspondence address, state and city, email address, telephone or mobile number, signature, date of birth, age, gender, occupation or vocation, marital and family status, nationality, citizenship, residency or domicile, educational background, employment history, skills and experience, professional licenses and affiliations, physical attributes, photographs, video recordings, facial scan, and relationship details. We may also collect nominee, beneficiary, dependent, family member, joint applicant, authorized representative, and guardian details, including their name, age, relationship, contact details, and supporting documents.</p>
+      <h5>Government and Regulatory Identifiers</h5>
+      <p>We may collect Aadhaar details or proof of possession of Aadhaar, Permanent Account Number (PAN), driving licence number and driving records, passport and visa details, voter ID, ABHA ID, DARPAN ID, CKYCR number, GSTIN, Electronic Insurance Account (eIA) number, vehicle registration details, and other officially valid documents or identifiers issued by government bodies, regulators, insurance repositories, or authorized agencies. This may include KYC documents relating to proposers, policyholders, insured persons, claimants, nominees, and beneficiaries.</p>
+      <h5>Financial, Payment and Employment Information</h5>
+      <p>We may collect payment details, bank account and other financial account details, transaction and payment records, premium and refund information, credit history and credit score, assets, income, tax information, employment or business details, salary slips, bank statements, income tax returns, employer information, and other financial information required for underwriting, premium collection, refunds, payouts, recoveries, claims, fraud prevention, and regulatory compliance.</p>
+      <h5>Health and Medical Data</h5>
+      <p>Where relevant to a health, travel, personal accident, motor, liability or other insurance product, underwriting decision, assistance service or claim, we may process information about your physical or mental health and medical history. This may include existing or previous illnesses, injuries, disabilities, symptoms, treatments, procedures, surgeries, medication, family medical history, allergies, maternity or pregnancy-related information where relevant, height, weight, body mass index, tobacco or alcohol use, occupation-related health risks, fitness or wellness information, and information provided in health declarations or questionnaires. We may also process pre-policy medical examination results, diagnostic and laboratory reports, prescriptions, discharge summaries, hospitalization and treatment records, medical certificates, hospital bills, doctor or healthcare-provider details, ABHA-related information where provided or permitted, cashless authorization records, and other information necessary for medical underwriting, policy servicing, assistance, claim assessment, investigation or settlement.</p>
+      <h5>Other Insurance-Related Data</h5>
+      <p>Depending on the insurance product or service you request, we may process information about the subject matter of insurance and the associated risk. This may include:</p>
+      <ul>
+        <li><strong>Motor insurance data:</strong> vehicle registration, make, model, variant, fuel type, chassis and engine details, age, usage, location, ownership, finance or hypothecation details, driving licence and driving history, odometer readings, inspection photographs or videos, telematics where applicable, previous policy, no-claim bonus, accident, repair and claim history.</li>
+        <li><strong>Property and engineering insurance data:</strong> property address and location, ownership or interest, occupancy, construction, age, value, use, security and fire-protection arrangements, machinery or equipment details, site plans, photographs, inspection and risk-engineering reports, natural-catastrophe exposure and prior loss history.</li>
+        <li><strong>Travel insurance data:</strong> passport and visa details, nationality and residency, travel dates, destinations, itinerary, ticket and booking details, purpose of travel, accompanying travelers, trip disruption or baggage information, emergency contacts and assistance records.</li>
+        <li><strong>Marine, cargo and transit insurance data:</strong> vessel, shipment, cargo, packaging, invoice, route, origin, destination, transporter, consignment, bill of lading or airway bill, storage, transit, loss, inspection and recovery information.</li>
+        <li><strong>Crop, cattle and other agricultural insurance data:</strong> farmer or beneficiary identifiers, land or farm location and records, crop, season, acreage, sowing and yield information, livestock identity, breed, age, health and valuation, weather or parametric data, enrolment details and information received through government or authorized scheme portals.</li>
+        <li><strong>Commercial, liability and specialized insurance data:</strong> business activities, premises, turnover, workforce, professional qualifications, licences, contracts, assets, customers, vendors, cybersecurity posture, incidents, liabilities, exposures, insured persons and other information needed to assess or service commercial, professional indemnity, cyber, aviation, group, gadget, warranty or other specialized insurance risks.</li>
+        <li><strong>Policy and claims data:</strong> quotations, proposals, declarations, policy numbers, coverage, premium, endorsements, renewals, cancellations, insured persons, nominees or beneficiaries, prior insurance, claims, accidents, incidents, loss circumstances, photographs, videos, police or legal records, estimates, invoices, surveys, investigations, recoveries, salvage and settlement information.</li>
+      </ul>
+      <h5>Digital Platform, Device and Usage Information</h5>
+      <p>When you access or use our websites, mobile applications or other Digital Platforms, we may collect the date and time of access, IP address, device type, operating system, browser type, device identifiers, approximate location, pages viewed, links clicked, referring webpage, session and activity records, and performance and diagnostic data, including how you interact with our platforms.</p>
+      <p>Where you enable them and subject to permissions, we may process biometric authentication data, camera or photo access, location and device-based identifiers, and we process passwords, PINs and login credentials in secure or encrypted form.</p>
+      <p>We use this information, including cookies and similar technologies, to operate, secure and improve our Digital Platforms, verify your identity and residential status, and meet regulatory requirements. You can manage cookies through your browser settings; for details of the cookies we use and their purposes, please refer to our Cookie Notice.</p>
+      <p>You are urged to keep this information accurate and updated to ensure that our services remain relevant and so that we can reach you effectively.</p>
+      <p>This privacy notice applies to all information provided to us or obtained by us through your use of our digital platforms and services. It does not apply to websites controlled by third parties that are not affiliated with us, including our Group Companies (&ldquo;Third Party Sites&rdquo;).</p>
+      <h5>Communications, Surveillance and Service Records</h5>
+      <p>We may collect CCTV footage, office or branch visitor and access records, call recordings, emails, chat and messaging records, social-media interactions, grievance and complaint records, survey and feedback responses, correspondence, testimonials or success stories where separately consented, and other records created through your interactions with our employees, agents, intermediaries, vendors, and customer-service channels.</p>
+
+      <h4>How We Use Your Digital Personal Data</h4>
+      <p>We process your Digital Personal Data on the basis of your consent, where you voluntarily provide it for a specified purpose, or for other legitimate uses permitted under applicable law. Such legitimate uses may include performance of functions under law, fulfilment of contractual and regulatory obligations, compliance with lawful requests, response to medical emergencies or disasters, and prevention, detection, and investigation of fraud, offences, and incidents. The principal purposes for which we process Digital Personal Data are described below.</p>
+      <table>
+        <tr><th>Purpose</th><th>How we use your information</th></tr>
+        <tr>
+          <td>Facilitate usage of our products, services and applications</td>
+          <td>
+            <ul>
+              <li>To receive and respond to pre-sale enquiries, understand your insurance requirements, generate quotations, assess preliminary eligibility, assist with proposal completion (including pre-filling information from our records or permitted sources), and enable applications and purchases through our branches, call centre, partners and Digital Platforms.</li>
+              <li>To facilitate customer onboarding, underwriting, risk assessment, verification, documentation, policy issuance, and ongoing policy administration in compliance with applicable legal and regulatory requirements.</li>
+              <li>To facilitate access to and use of websites, digital platforms, mobile applications, and online services.</li>
+              <li>To share your information with our partners and service providers for providing insurance facilities and services opted by you.</li>
+              <li>To assess the proposed risk; verify declarations and supporting records; arrange medical examinations, diagnostic checks, or vehicle and property inspections; evaluate prior insurance and claims history; and determine acceptance, coverage, premium, terms, exclusions, deductibles and limits.</li>
+              <li>To process proposals; issue policies and related documents or certificates; record nominees, beneficiaries and insured members; and administer government-mandated or supported insurance schemes and verify enrolment or eligibility.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>Incidental or Emergency Use</td>
+          <td>To support the safe and efficient running of our operations, logistics, and administrative functions, and to respond to emergencies or safety-critical situations where necessary.</td>
+        </tr>
+        <tr>
+          <td>Manage your relationship with us</td>
+          <td>
+            <ul>
+              <li>To capture and record CCTV footage during your visit to our offices or branches for security purposes.</li>
+              <li>To administer policies after issuance endorsements, corrections, changes to insured members, renewals, cancellations, refunds and other service requests, update details, provide renewal quotations, manage customer requests and account updates, and communicate servicing status.</li>
+              <li>To ensure fair, timely and compliant claims handling through assessment, investigation, decisioning and payout management — including cashless, reimbursement, repair, roadside assistance, travel or health assistance; coordination with service providers; and management of salvage, recoveries and subrogation.</li>
+              <li>To manage premium collections, reconciliations, payouts, refunds and financial-control activities with accuracy and compliance.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>Regulatory Compliance, Risk Management and Customer Due Diligence</td>
+          <td>
+            <ul>
+              <li>To ensure secure, reliable IT operations through system management, support, cybersecurity monitoring, and access governance.</li>
+              <li>To fulfil statutory requirements and strengthen organizational controls through regulatory reporting, AML/KYC compliance, audits, risk monitoring, incident management, and governance oversight.</li>
+              <li>To manage legal risks through contract vetting, litigation handling, compliance documentation, and governance support.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>Service Improvement and Development</td>
+          <td>
+            <ul>
+              <li>To process actionable intelligence through reporting, analytics, dashboards, risk insights, and data quality validation.</li>
+              <li>To provide accurate financial insights by modelling, valuing, analyzing experience, assessing solvency, and supporting pricing and product decisions.</li>
+              <li>To support risk transfer by managing reinsurer onboarding, treaty setup and reporting.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>Promotional and Marketing Activities (Optional)</td>
+          <td>
+            <ul>
+              <li>To provide you with information about our products, services, offers, and promotional campaigns, including products and services that may be relevant to your needs and preferences.</li>
+              <li>To evaluate, develop and improve our services, by performing activities like data analysis and monitoring usage trends.</li>
+              <li>To share, disclose, exchange, or use my/our information with ICICI Lombard&rsquo;s Associates, Subsidiaries, Affiliates, Joint Ventures and Partners, engaged or to be engaged by ICICI Lombard for providing their services/products, for the following specified purposes.</li>
+            </ul>
+          </td>
+        </tr>
+      </table>
+
+      <h4>Who We Share Your Digital Personal Data With</h4>
+      <p>We may share your Digital Personal Data with Data Processors and other recipients, including vendors, service providers, insurance intermediaries, brokers, corporate agents, web aggregators, co-insurers, reinsurers, third-party administrators, hospitals, doctors, diagnostic centres, investigators, valuers, KYC agencies, payment partners, technology and cloud providers, call centres, document management vendors, accountants, actuaries, auditors, lawyers, professional advisers, Group companies, affiliates, and business partners, for the purposes described in this Privacy Notice. We may also share information with government authorities, regulators, law-enforcement agencies, courts, tribunals, and statutory bodies where required by law or regulatory direction. Appropriate contractual and security safeguards are implemented, and recipients may process information only for authorized purposes.</p>
+
+      <h4>Your Rights</h4>
+      <table>
+        <tr><th>Your Rights</th><th>Description</th><th>Ways you may exercise these rights</th></tr>
+        <tr>
+          <td>Right to Access Information About Digital Personal Data</td>
+          <td>You may request a summary of your Digital Personal Data, Processing activities undertaken by ICICI Lombard, and information about Data Fiduciaries or Data Processors with whom the data has been shared.</td>
+          <td rowspan="4">Contact the customer service/privacy team using the details below; use the relevant rights-management link, or reach out to your branch. We may request information to verify your identity before processing the request.</td>
+        </tr>
+        <tr>
+          <td>Right to Correction of Digital Personal Data</td>
+          <td>You may request correction, completion, or updating of inaccurate, incomplete, or outdated Digital Personal Data.</td>
+        </tr>
+        <tr>
+          <td>Right to Erasure of Digital Personal Data</td>
+          <td>You may request deletion of Digital Personal Data, subject to retention required for products, services, legal, regulatory, or contractual obligations.</td>
+        </tr>
+        <tr>
+          <td>Right to Nominate</td>
+          <td>You may nominate one or more persons to exercise your rights in the event of incapacity or death.</td>
+        </tr>
+        <tr>
+          <td>Right of Grievance Redressal</td>
+          <td>You may raise concerns regarding the handling of your Digital Personal Data. If not satisfied after exhausting ICICI Lombard&rsquo;s grievance process, you may approach the Data Protection Board of India in the prescribed manner.</td>
+          <td>&mdash;</td>
+        </tr>
+      </table>
+      <p>If we process your Digital Personal Data on the basis of consent, you have the right to withdraw or amend that consent at any time. Withdrawal will not affect the lawfulness of Processing completed before withdrawal and may limit our ability to provide products or services that depend on the relevant data. To withdraw or amend consent, contact us using the details below, use the relevant consent-management link, or reach out to your branch.</p>
+
+      <h4>How We Retain Your Digital Personal Data</h4>
+      <p>We retain your Digital Personal Data only for as long as necessary to fulfil the purposes for which it was collected, deliver products and services, comply with legal and regulatory obligations, maintain accurate business and financial records, and address queries, claims, disputes, investigations, or proceedings. When the purpose has been fulfilled and retention is no longer required, we securely delete or erase the data, including copies held by authorized processors, in accordance with applicable requirements.</p>
+
+      <h4>How We Keep Your Digital Personal Data Secure</h4>
+      <p>We implement reasonable physical, technical, organizational, and administrative safeguards to protect Digital Personal Data against loss, theft, unauthorized access, disclosure, copying, use, alteration, or destruction. These safeguards include access controls, encryption, masking, monitoring, incident management, and contractual protections for Data Processors. In the event of a Digital Personal Data breach affecting you, we will investigate, mitigate, remediate, and provide notifications to affected Data Principals and the Data Protection Board as required by applicable law.</p>
+
+      <h4>Children and Persons with Disabilities</h4>
+      <p>Children under 18 years of age and persons with disabilities requiring a lawful guardian should not directly submit Digital Personal Data through our Sites. Their Digital Personal Data will be processed only pursuant to verifiable consent of a parent or lawful guardian, in accordance with applicable law. If you believe such information has been shared in error, please contact Customer Support at customersupport@icicilombard.com.</p>
+
+      <h4>International Transfers of Digital Personal Data</h4>
+      <p>Your Digital Personal Data may be transferred or processed outside India only where permitted under applicable Indian data protection laws, IRDAI requirements, and other applicable laws. We will not transfer Digital Personal Data for Processing to any country or territory to which such transfer has been restricted or prohibited by the Central Government under the DPDPA, including any country or territory notified for this purpose from time to time. For all permitted international transfers, we implement appropriate contractual, technical, organizational, and security safeguards to protect your Digital Personal Data, regardless of the location in which it is stored or processed.</p>
+
+      <h4>Your Responsibilities as a Data Principal</h4>
+      <p>You must comply with applicable law while exercising your rights; not impersonate another person or suppress material information; not submit false or frivolous grievances or complaints; and provide only verifiably authentic information when seeking correction or erasure. You are also responsible for maintaining the confidentiality of passwords, PINs, and credentials used to access our Sites and Services.</p>
+
+      <h4>Updates to This Privacy Notice</h4>
+      <p>We may revise this Privacy Notice periodically. Whenever updates are made, we will update the &ldquo;Last update&rdquo; date at the top of this Notice. If significant changes materially affect our privacy practices or the purpose of Processing, we may provide advance notice through appropriate means and seek fresh consent where required.</p>
+
+      <h4>How to Contact Our Grievance Redressal Officer (GRO)</h4>
+      <p>For questions, requests, or grievances regarding the Processing of your Digital Personal Data, please contact ICICI Lombard&rsquo;s designated Grievance Redressal Officer.</p>
+
+      <h4>Details of the Data Fiduciary</h4>
+      <p>
+        ICICI Lombard General Insurance Company Limited<br>
+        ICICI Lombard House, 414, Veer Savarkar Marg, Near Siddhivinayak Temple, Prabhadevi, Mumbai &ndash; 400025, Maharashtra, India<br>
+        Phone: 1800 2666<br>
+        Email: customersupport@icicilombard.com<br>
+        Website: www.icicilombard.com
+      </p>
+    </div>
+    <div class="privacy-notice-footer">
+      <button type="button" class="privacy-notice-ok-btn" id="privacyNoticeOkBtn" disabled>OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ============================================================
+  // Securiti consent_upload — same endpoint/header shape as the
+  // Godrej Chemicals reference script.
+  //
+  // SECURITY NOTE: this runs client-side on a public GitHub Pages
+  // site, so anything in SECURITI_HEADERS is visible to anyone who
+  // views source / opens devtools. For a real deployment, proxy
+  // this call through a small backend (Cloudflare Worker, Lambda,
+  // etc.) that holds the real key/secret server-side, and have the
+  // page call that proxy instead of app.securiti.ai directly.
+  // ============================================================
+  const SECURITI_ENDPOINT = 'https://app6.securiti.ai/privaci/v1/consentapi/consent_upload';
+  const SECURITI_HEADERS = {
+    'X-API-Key':    '6OCVv8WXVhAgtsl9J8gw1Q9eGzg782CdOaSd1Vte',
+    'X-API-Secret': 'DA5k8S0ZYzc3UHmcyleW1BD4cpY1ReihV3Wvu2p6',
+    'X-TIDENT':     '93400f84-7f7b-4497-8ad8-4b7867c4a157',
+    'Content-Type': 'application/json'
+  };
+  const FORM_SELECTOR = '#quoteForm';
+  const inFlight = new WeakSet();
+
+  // ============================================================
+  // readForm — pull field/checkbox values by id.
+  //
+  // Checkbox mapping (matches the "Stay connected with us" screen):
+  //   #consentPrivacyNotice     -> "I agree to the Privacy Notice"        (required — gates "Get quote")
+  //   #consentMarketingChannels -> "...products, services, offers, and promotional campaigns..." (optional)
+  //   #consentVoice             -> "Voice" (optional)
+  //   #consentText              -> "Text" (optional)
+  //   #consentDataAnalysis      -> "...evaluating, developing, and improving services..." (optional)
+  //   #consentGroupCompanies    -> "...associates, subsidiaries, affiliates, joint ventures, and partners..." (optional)
+  // ============================================================
+  function readForm(form) {
+    const get = function (id) {
+      const el = form.querySelector('#' + id);
+      return el && el.value ? el.value.trim() : '';
+    };
+    const checked = function (id) {
+      const el = form.querySelector('#' + id);
+      return !!(el && el.checked);
+    };
+    return {
+      vehicleReg:               get('vehicleReg'),
+      mobile:                   get('mobileNumber'),
+      privacyNoticeGranted:     checked('consentPrivacyNotice'),
+      marketingChannelsGranted: checked('consentMarketingChannels'),
+      voiceGranted:             checked('consentVoice'),
+      textGranted:              checked('consentText'),
+      dataAnalysisGranted:      checked('consentDataAnalysis'),
+      groupCompaniesGranted:    checked('consentGroupCompanies')
+    };
+  }
+
+  // ============================================================
+  // isValid — mobile number required and must be 10 digits; only
+  // the Privacy Notice checkbox is mandatory to proceed. Marketing
+  // Channels, Voice, Text, Data Analysis, and Group Companies are
+  // all optional opt-ins.
+  // ============================================================
+  function isValid(fields) {
+    if (!fields.mobile) return false;
+    if (!/^[0-9]{10}$/.test(fields.mobile)) return false;
+    if (!fields.privacyNoticeGranted) return false;
+    return true;
+  }
+
+  // ============================================================
+  // buildPayload — Securiti consent_upload schema. Every checkbox
+  // is reported as the visitor actually set it (not hardcoded true).
+  // No DPDPA re-consent purpose — that popup has been removed.
+  // ============================================================
+  function buildPayload(fields) {
+    return {
+      UUID: fields.mobile,
+      uuids: {
+        mobile_number:               fields.mobile,
+        vehicle_registration_number: fields.vehicleReg
+      },
+      activity_timestamp: Math.floor(Date.now() / 1000),
+      consent_source: 'Vehicle Insurance Quote WebForm',
+      consent_info: [
+        {
+          processing_purpose_name: 'Insurance Quote Request',
+          consented_items: [
+            { consent_purpose_name: 'Privacy Notice', consent_granted: fields.privacyNoticeGranted }
+          ]
+        },
+        {
+          processing_purpose_name: 'Marketing Communication',
+          consented_items: [
+            { consent_purpose_name: 'Products, Services, Offers & Promotional Campaigns', consent_granted: fields.marketingChannelsGranted },
+            { consent_purpose_name: 'Voice', consent_granted: fields.voiceGranted },
+            { consent_purpose_name: 'Text', consent_granted: fields.textGranted },
+            { consent_purpose_name: 'Data Analysis & Trend Monitoring', consent_granted: fields.dataAnalysisGranted },
+            { consent_purpose_name: 'Associates, Subsidiaries, Affiliates, Joint Ventures & Partners', consent_granted: fields.groupCompaniesGranted }
+          ]
+        }
+      ]
+    };
+  }
+
+  // ============================================================
+  // uploadConsent — POST to Securiti
+  // ============================================================
+  async function uploadConsent(payload) {
+    const response = await fetch(SECURITI_ENDPOINT, {
+      method:  'POST',
+      headers: SECURITI_HEADERS,
+      body:    JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error('Securiti ' + response.status + ': ' + errorText);
+    }
+    return response.json();
+  }
+
+  // ============================================================
+  // Privacy Notice popup — opened by clicking the "Privacy Notice"
+  // text inside the first consent checkbox. Mandatory read-through:
+  // the OK button stays disabled until the notice body is scrolled
+  // to the bottom, and there is no other way to dismiss the popup.
+  // ============================================================
+  const privacyNoticeOverlay   = document.getElementById('privacyNoticeOverlay');
+  const privacyNoticeLink      = document.getElementById('privacyNoticeLink');
+  const privacyNoticeBody      = document.getElementById('privacyNoticeBody');
+  const privacyNoticeOkBtn     = document.getElementById('privacyNoticeOkBtn');
+  const privacyNoticeCheckbox  = document.getElementById('consentPrivacyNotice');
+
+  // True when the popup was opened by the visitor trying to CHECK
+  // the "I agree to the Privacy Notice" checkbox — in that case,
+  // clicking OK is what actually checks the box (see below).
+  // False when opened via the "Privacy Notice" text link, which is
+  // purely informational and never changes the checkbox itself.
+  let pendingCheckboxConsent = false;
+
+  function openPrivacyNotice(event) {
+    if (event) event.preventDefault();
+    if (privacyNoticeOverlay) privacyNoticeOverlay.classList.add('active');
+    if (privacyNoticeOkBtn) privacyNoticeOkBtn.disabled = true;
+    if (privacyNoticeBody) privacyNoticeBody.scrollTop = 0;
+  }
+  function closePrivacyNotice() {
+    if (privacyNoticeOverlay) privacyNoticeOverlay.classList.remove('active');
+  }
+
+  if (privacyNoticeLink) {
+    privacyNoticeLink.addEventListener('click', function (event) {
+      pendingCheckboxConsent = false;
+      openPrivacyNotice(event);
+    });
+  }
+
+  // Clicking the checkbox itself to CHECK it opens the same popup
+  // and holds off on actually checking the box until "OK" is
+  // clicked (i.e. the visitor has scrolled through the notice).
+  // Unchecking the box (it was already checked) works normally,
+  // with no popup.
+  if (privacyNoticeCheckbox) {
+    privacyNoticeCheckbox.addEventListener('click', function (event) {
+      if (privacyNoticeCheckbox.checked) {
+        event.preventDefault(); // reverts the native toggle back to unchecked
+        pendingCheckboxConsent = true;
+        openPrivacyNotice();
+      }
+    });
+  }
+
+  if (privacyNoticeBody) {
+    privacyNoticeBody.addEventListener('scroll', function () {
+      const reachedBottom = privacyNoticeBody.scrollTop + privacyNoticeBody.clientHeight >= privacyNoticeBody.scrollHeight - 4;
+      if (reachedBottom && privacyNoticeOkBtn) privacyNoticeOkBtn.disabled = false;
+    });
+  }
+
+  if (privacyNoticeOkBtn) {
+    privacyNoticeOkBtn.addEventListener('click', function () {
+      if (privacyNoticeOkBtn.disabled) return;
+      closePrivacyNotice();
+      if (pendingCheckboxConsent && privacyNoticeCheckbox) {
+        privacyNoticeCheckbox.checked = true;
+        privacyNoticeCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+        pendingCheckboxConsent = false;
+      }
+    });
+  }
+
+  // ============================================================
+  // Get Quote gating — only the "I agree to the Privacy Notice"
+  // checkbox is required to enable the "Get quote" button. All
+  // other consent checkboxes (Marketing Channels, Voice, Text,
+  // Data Analysis, Group Companies) are optional and do not affect
+  // this gating. Re-checked live on every checkbox change, not
+  // just on submit.
+  // ============================================================
+  const quoteForm = document.querySelector(FORM_SELECTOR);
+  const getQuoteBtn = quoteForm ? quoteForm.querySelector('#submitBtn') : null;
+  const mandatoryConsentIds = [
+    'consentPrivacyNotice'
+  ];
+
+  function refreshGetQuoteState() {
+    if (!getQuoteBtn) return;
+    const allChecked = mandatoryConsentIds.every(function (id) {
+      const el = document.getElementById(id);
+      return !!(el && el.checked);
+    });
+    getQuoteBtn.disabled = !allChecked;
+  }
+
+  mandatoryConsentIds.forEach(function (id) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', refreshGetQuoteState);
+  });
+  refreshGetQuoteState(); // set initial disabled state on page load
+
+  // ============================================================
+  // Submit handler — validate fields, then upload consent to
+  // Securiti directly. The DPDPA re-consent popup has been removed
+  // entirely, so there is no intermediate Yes/No step anymore.
+  // ============================================================
+  document.addEventListener('submit', function (event) {
+    const form = event.target;
+    if (!form || !form.matches || !form.matches(FORM_SELECTOR)) return;
+    event.preventDefault();
+    if (inFlight.has(form)) return; // duplicate-click guard
+
+    const statusMsg = form.querySelector('#statusMsg');
+    const submitBtn = form.querySelector('#submitBtn');
+    const fields = readForm(form);
+
+    if (!isValid(fields)) {
+      statusMsg.textContent = !fields.mobile || !/^[0-9]{10}$/.test(fields.mobile)
+        ? 'Please enter a valid 10-digit mobile number.'
+        : 'You must agree to the Privacy Notice to continue.';
+      statusMsg.className = 'status-msg error';
+      return;
+    }
+
+    statusMsg.textContent = '';
+    inFlight.add(form);
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const payload = buildPayload(fields);
+
+    uploadConsent(payload)
+      .then(function (result) {
+        console.log('Consent recorded (quote):', result);
+        statusMsg.textContent = 'Consent recorded. Fetching your quote...';
+        statusMsg.className = 'status-msg success';
+        // TODO: continue with the real quote flow here (redirect / API call).
+      })
+      .catch(function (err) {
+        console.error('Consent upload failed:', err);
+        statusMsg.textContent = 'Something went wrong recording consent. Please try again.';
+        statusMsg.className = 'status-msg error';
+      })
+      .finally(function () {
+        inFlight.delete(form);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Get quote';
+      });
+  }, true);
+})();
+</script>
+</body>
+</html>
